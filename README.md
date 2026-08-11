@@ -62,6 +62,13 @@ update: nothing already placed is removed or renamed between versions.
 Removing the mod from a world will leave holes where its blocks were, as with any
 content mod.
 
+## Source
+
+Every supported Minecraft version and mod loader has its own branch, named
+`<Minecraft version>/<loader>` — for example [`1.21.1/neoforge`](../../tree/1.21.1/neoforge)
+or [`1.20.1/fabric`](../../tree/1.20.1/fabric). Each one is a complete Gradle
+project: check it out and run `./gradlew build`.
+
 ## Changelog
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the full history.
@@ -74,4 +81,4 @@ exact version combination get fixed fastest.
 
 ## License
 
-All rights reserved. See [`LICENSE`](LICENSE).
+MIT — see [`LICENSE`](LICENSE).
