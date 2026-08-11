@@ -1,0 +1,10 @@
+{
+  "values": {
+    "backport:poplar_log": {
+      "stripped_block": "backport:stripped_poplar_log"
+    },
+    "backport:poplar_wood": {
+      "stripped_block": "backport:stripped_poplar_wood"
+    }
+  }
+}
