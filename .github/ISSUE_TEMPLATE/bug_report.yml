@@ -1,0 +1,56 @@
+name: Bug report
+description: Something in Backport does not work as it should
+labels: [bug]
+body:
+  - type: input
+    id: minecraft
+    attributes:
+      label: Minecraft version
+      placeholder: "1.21.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Mod loader
+      options:
+        - NeoForge
+        - Forge
+        - Fabric
+        - Quilt
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Backport version
+      description: The version in the file name, e.g. 1.0.3
+      placeholder: "1.0.3"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log or crash report
+      description: >
+        Paste the crash report or the relevant part of latest.log, or link to it.
+        Leave empty if the game did not crash.
+      render: text
+
+  - type: input
+    id: other-mods
+    attributes:
+      label: Other mods
+      description: Anything else that could be involved. Write "none" if the mod was alone.
+      placeholder: "none"
