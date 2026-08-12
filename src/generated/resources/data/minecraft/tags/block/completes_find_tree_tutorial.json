@@ -1,0 +1,8 @@
+{
+  "values": [
+    "#backport:poplar_logs",
+    "backport:red_poplar_leaves",
+    "backport:orange_poplar_leaves",
+    "backport:yellow_poplar_leaves"
+  ]
+}
