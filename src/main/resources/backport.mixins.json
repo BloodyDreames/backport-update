@@ -1,0 +1,42 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "dev.BloodyDreamsWork.backport.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "AbstractArrowMixin",
+    "ArmadilloBallUpMixin",
+    "BoatMixin",
+    "ChunkGeneratorStructureStateMixin",
+    "DrownedTridentAttackGoalMixin",
+    "EnderDragonMixin",
+    "ExplorationMapFunctionMixin",
+    "ExplosionMixin",
+    "FarmBlockMixin",
+    "ItemEntityMixin",
+    "MiningFatigueMixin",
+    "MobMixin",
+    "ProjectileMixin",
+    "PufferfishMixin",
+    "OverworldBiomeBuilderMixin",
+    "RangedAttackGoalAccessor",
+    "SaplingBlockMixin",
+    "ShieldPriorityMixin",
+    "SlimeMixin",
+    "ShovelPriorityMixin",
+    "SpectatorPortalMixin",
+    "TntBlockMixin",
+    "TreasureMapForEmeraldsAccessor",
+    "TreeGrowerAccessor",
+    "VanillaRegistriesMixin",
+    "TurtleEggBlockMixin"
+  ],
+  "client": [
+    "client.AdvancementsScreenMixin",
+    "client.MinecraftAttackMixin",
+    "client.StructureBlockEditScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
