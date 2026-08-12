@@ -1,0 +1,7 @@
+{
+  "values": [
+    "backport:cartographer/ocean_explorer_map",
+    "backport:cartographer/woodland_explorer_map",
+    "backport:cartographer/trial_explorer_map"
+  ]
+}
