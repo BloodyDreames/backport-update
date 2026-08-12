@@ -1,0 +1,184 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'idea'
+    id 'net.neoforged.moddev' version '2.0.143'
+    id 'me.modmuss50.mod-publish-plugin' version '2.2.0'
+}
+
+version = "${mod_version}+mc${minecraft_version}"
+group = mod_group_id
+
+repositories {
+    mavenLocal()
+}
+
+base {
+    archivesName = mod_id
+}
+
+tasks.named('jar') {
+    archiveClassifier = 'neoforge'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs.addAll(['-Xmaxerrs', '1000'])
+}
+
+tasks.withType(ProcessResources).configureEach {
+    filteringCharset = 'UTF-8'
+}
+
+neoForge {
+    version = project.neo_version
+
+    runs {
+        client {
+            client()
+
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        clientData {
+            clientData()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/client-resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        serverData {
+            serverData()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
+    srcDir 'src/generated/client-resources'
+}
+
+sourceSets.main.java {
+    exclude 'dev/BloodyDreamsWork/backport/data/**'
+    exclude 'dev/BloodyDreamsWork/backport/content/ExplorerMapForEmeralds.java'
+    exclude 'dev/BloodyDreamsWork/backport/mixin/TreasureMapForEmeraldsAccessor.java'
+}
+
+dependencies {
+
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [minecraft_version      : minecraft_version,
+                             minecraft_version_range: minecraft_version_range,
+                             neo_version            : neo_version,
+                             neo_version_range      : neo_version_range,
+                             mod_id                 : mod_id,
+                             mod_name               : mod_name,
+                             mod_license            : mod_license,
+                             mod_version            : project.version,
+                             mod_authors            : mod_authors,
+                             mod_description        : new String(
+                                     mod_description.getBytes('ISO-8859-1'), 'UTF-8')]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+    }
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+def productionJar = tasks.named('jar', Jar)
+def publishProjectDirectory = layout.projectDirectory
+def publishProjectVersion = project.version.toString()
+def publishModName = project.mod_name.toString()
+def defaultPublishLoader = productionJar.flatMap { it.archiveClassifier }
+def publishLoader = providers.gradleProperty('publishLoader').orElse(defaultPublishLoader)
+def publishFile = providers.gradleProperty('publishFile')
+        .map { publishProjectDirectory.file(it) }
+        .orElse(productionJar.flatMap { it.archiveFile })
+def publishMinecraftVersion = providers.gradleProperty('publishMinecraftVersion')
+        .orElse(project.minecraft_version.toString())
+def publishVersion = providers.gradleProperty('publishVersion')
+        .orElse(publishLoader.map { "${publishProjectVersion}-${it}" })
+def publishDisplayName = providers.gradleProperty('publishDisplayName').orElse(publishLoader.map { loader ->
+    def loaderName = loader.equalsIgnoreCase('neoforge') ? 'NeoForge' : loader.capitalize()
+    "${publishModName} ${publishProjectVersion} (${loaderName})"
+})
+def publishChangelog = providers.fileContents(layout.projectDirectory.file('CHANGELOG.md')).asText
+        .orElse('See project page for changes.')
+def normalizedVersion = project.version.toString().toLowerCase(java.util.Locale.ROOT)
+def publishDryRun = providers.gradleProperty('publishDryRun')
+        .map { it.toBoolean() }
+        .orElse(false)
+
+publishMods {
+    file = publishFile
+    version = publishVersion
+    displayName = publishDisplayName
+    changelog = publishChangelog
+    type = normalizedVersion.contains('alpha') ? ALPHA :
+            (normalizedVersion.contains('beta') || normalizedVersion.contains('rc') ? BETA : STABLE)
+    modLoaders.add(publishLoader)
+    dryRun = publishDryRun
+
+    curseforge {
+        projectId = project.curseforge_project_id
+        accessToken = providers.environmentVariable('CURSEFORGE_TOKEN')
+        minecraftVersions.add(publishMinecraftVersion)
+        client = true
+        server = true
+    }
+
+    modrinth {
+        projectId = project.modrinth_project_id
+        accessToken = providers.environmentVariable('MODRINTH_TOKEN')
+        minecraftVersions.add(publishMinecraftVersion)
+        environment = CLIENT_AND_SERVER
+    }
+}
