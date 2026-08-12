@@ -1,0 +1,29 @@
+package dev.BloodyDreamsWork.backport.content;
+
+import dev.BloodyDreamsWork.backport.registry.ModEntities;
+import dev.BloodyDreamsWork.backport.registry.ModItems;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.ChestBoat;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
+
+public class PoplarChestBoat extends ChestBoat {
+
+    public PoplarChestBoat(EntityType<? extends Boat> type, Level level) {
+        super(type, level);
+    }
+
+    public PoplarChestBoat(Level level, double x, double y, double z) {
+        this(ModEntities.POPLAR_CHEST_BOAT.get(), level);
+        this.setPos(x, y, z);
+        this.xo = x;
+        this.yo = y;
+        this.zo = z;
+    }
+
+    @Override
+    public Item getDropItem() {
+        return ModItems.POPLAR_CHEST_BOAT.get();
+    }
+}

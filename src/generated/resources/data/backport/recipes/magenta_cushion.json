@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "cushion",
+  "key": {
+    "S": {
+      "item": "backport:magenta_wool_slab"
+    }
+  },
+  "pattern": [
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "item": "backport:magenta_cushion"
+  }
+}
