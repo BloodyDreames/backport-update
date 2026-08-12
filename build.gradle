@@ -1,0 +1,155 @@
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
+    id 'me.modmuss50.mod-publish-plugin' version '2.2.0'
+    id 'org.spongepowered.mixin' version '0.7.+'
+}
+
+version = "${mod_version}+mc${minecraft_version}"
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(ProcessResources).configureEach {
+    filteringCharset = 'UTF-8'
+}
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+        }
+
+        client {
+            property 'forge.enabledGameTestNamespaces', mod_id
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            property 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+}
+
+repositories {
+    mavenLocal()
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+processResources {
+    var replaceProperties = [minecraft_version_range: minecraft_version_range,
+                             forge_version_range    : forge_version_range,
+                             loader_version_range   : loader_version_range,
+                             mod_id                 : mod_id,
+                             mod_name               : mod_name,
+                             mod_license            : mod_license,
+                             mod_version            : project.version,
+                             mod_authors            : mod_authors,
+                             mod_description        : new String(
+                                     mod_description.getBytes('ISO-8859-1'), 'UTF-8')]
+    inputs.properties replaceProperties
+    filesMatching('META-INF/mods.toml') {
+        expand replaceProperties
+    }
+}
+
+tasks.named('jar') {
+    archiveClassifier = 'forge'
+    finalizedBy 'reobfJar'
+
+    manifest {
+        attributes([
+                'MixinConfigs'   : "${mod_id}.mixins.json",
+                'Specification-Title'   : mod_id,
+                'Specification-Version' : '1',
+                'Implementation-Title'  : mod_name,
+                'Implementation-Version': project.version
+        ])
+    }
+}
+
+def productionJar = tasks.named('jar', Jar)
+def publishProjectDirectory = layout.projectDirectory
+def publishProjectVersion = project.version.toString()
+def publishModName = project.mod_name.toString()
+def defaultPublishLoader = productionJar.flatMap { it.archiveClassifier }
+def publishLoader = providers.gradleProperty('publishLoader').orElse(defaultPublishLoader)
+def publishFile = providers.gradleProperty('publishFile')
+        .map { publishProjectDirectory.file(it) }
+        .orElse(productionJar.flatMap { it.archiveFile })
+def publishMinecraftVersion = providers.gradleProperty('publishMinecraftVersion')
+        .orElse(project.minecraft_version.toString())
+def publishVersion = providers.gradleProperty('publishVersion')
+        .orElse(publishLoader.map { "${publishProjectVersion}-${it}" })
+def publishDisplayName = providers.gradleProperty('publishDisplayName').orElse(publishLoader.map { loader ->
+    "${publishModName} ${publishProjectVersion} (${loader.capitalize()})"
+})
+def publishChangelog = providers.fileContents(layout.projectDirectory.file('CHANGELOG.md')).asText
+def normalizedVersion = project.version.toString().toLowerCase(java.util.Locale.ROOT)
+def publishDryRun = providers.gradleProperty('publishDryRun')
+        .map { it.toBoolean() }
+        .orElse(false)
+
+publishMods {
+    file = publishFile
+    version = publishVersion
+    displayName = publishDisplayName
+    changelog = publishChangelog
+    type = normalizedVersion.contains('alpha') ? ALPHA :
+            (normalizedVersion.contains('beta') || normalizedVersion.contains('rc') ? BETA : STABLE)
+    modLoaders.add(publishLoader)
+    dryRun = publishDryRun
+
+    curseforge {
+        projectId = project.curseforge_project_id
+        accessToken = providers.environmentVariable('CURSEFORGE_TOKEN')
+        minecraftVersions.add(publishMinecraftVersion)
+        client = true
+        server = true
+    }
+
+    modrinth {
+        projectId = project.modrinth_project_id
+        accessToken = providers.environmentVariable('MODRINTH_TOKEN')
+        minecraftVersions.add(publishMinecraftVersion)
+        environment = CLIENT_AND_SERVER
+    }
+}

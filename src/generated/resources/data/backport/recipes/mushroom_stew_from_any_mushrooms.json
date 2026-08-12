@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "backport:mushrooms"
+    },
+    {
+      "tag": "backport:mushrooms"
+    },
+    {
+      "item": "minecraft:bowl"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "item": "minecraft:mushroom_stew"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "backport:abandoned_camp/trees/bamboo",
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:feature_pool_element",
+        "feature": "backport:bamboo_in_structure",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "minecraft:empty"
+}

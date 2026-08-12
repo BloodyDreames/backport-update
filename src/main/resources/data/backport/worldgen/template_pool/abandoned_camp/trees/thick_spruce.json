@@ -1,0 +1,14 @@
+{
+  "name": "backport:abandoned_camp/trees/thick_spruce",
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:feature_pool_element",
+        "feature": "minecraft:mega_spruce_checked",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "minecraft:empty"
+}

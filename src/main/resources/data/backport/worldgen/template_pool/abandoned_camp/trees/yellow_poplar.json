@@ -1,0 +1,14 @@
+{
+  "name": "backport:abandoned_camp/trees/yellow_poplar",
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:feature_pool_element",
+        "feature": "backport:yellow_poplar_checked",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "minecraft:empty"
+}

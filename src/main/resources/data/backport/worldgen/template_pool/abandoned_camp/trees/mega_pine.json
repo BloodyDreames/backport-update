@@ -1,0 +1,14 @@
+{
+  "name": "backport:abandoned_camp/trees/mega_pine",
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:feature_pool_element",
+        "feature": "minecraft:mega_pine_checked",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "minecraft:empty"
+}

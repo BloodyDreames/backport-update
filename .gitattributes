@@ -1,0 +1,19 @@
+# Normalize line endings across the repository
+* text=auto eol=lf
+
+# Scripts executed on Linux must keep LF
+gradlew        text eol=lf
+*.sh           text eol=lf
+
+# Windows batch files must keep CRLF
+gradlew.bat    text eol=crlf
+*.bat          text eol=crlf
+*.cmd          text eol=crlf
+
+# Binary assets are left alone
+*.jar          binary
+*.png          binary
+*.ogg          binary
+*.nbt          binary
+*.zip          binary
+*.ttf          binary
