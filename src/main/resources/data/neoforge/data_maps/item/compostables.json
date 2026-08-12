@@ -1,0 +1,22 @@
+{
+  "values": {
+    "backport:red_poplar_leaves": {
+      "chance": 0.3
+    },
+    "backport:orange_poplar_leaves": {
+      "chance": 0.3
+    },
+    "backport:yellow_poplar_leaves": {
+      "chance": 0.3
+    },
+    "backport:poplar_sapling": {
+      "chance": 0.3
+    },
+    "backport:red_shrub": {
+      "chance": 0.3
+    },
+    "backport:shelf_mushroom": {
+      "chance": 0.65
+    }
+  }
+}
